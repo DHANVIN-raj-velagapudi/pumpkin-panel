@@ -1,0 +1,28 @@
+# Build output
+/target
+/web/node_modules
+/web/dist/assets
+/web/tsconfig.tsbuildinfo
+
+# Runtime data. This whole directory is off limits: it holds the database
+# (password hashes, session tokens, encrypted TOTP secrets), the encryption
+# key itself, and world backups.
+/data
+data/
+
+# Databases anywhere
+*.db
+*.db-shm
+*.db-wal
+
+# Keys and certificates
+*.key
+*.pem
+*.pfx
+*.p12
+secret.key
+
+# Local configuration
+panel.toml
+.env
+.env.*
