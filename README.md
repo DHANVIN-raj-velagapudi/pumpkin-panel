@@ -10,6 +10,18 @@ Ships as **one binary**. No Docker, no PHP, no database server, no separate daem
 > developed and tested on Windows only so far, and automated test coverage is thin. See
 > [Known gaps](#known-gaps) before pointing it at anything you care about.
 
+## Download
+
+Prebuilt binaries for Windows and Linux are on the [Releases page](../../releases) — no Rust or
+Node toolchain required.
+
+- **Stable**: pick a tagged version, e.g. `v0.1.0`.
+- **Latest**: the [`latest` pre-release](../../releases/tag/latest) rebuilds automatically from
+  every push to `main`, for anyone who wants the newest build without waiting for a version tag.
+
+Unpack the archive and run the binary — see [Running](#running) below. To build from source instead,
+see [Building](#building).
+
 ## Why
 
 Pumpkin ships no panel of its own; the documented route is Pterodactyl, whose

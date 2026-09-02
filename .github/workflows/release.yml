@@ -1,0 +1,118 @@
+name: Release
+
+# Two ways this runs:
+#   - push a tag like v0.2.0  -> a real, versioned GitHub Release
+#   - push to main            -> a rolling "latest" pre-release, so anyone can
+#                                 grab the newest build without waiting for a
+#                                 version tag
+on:
+  push:
+    branches: [main]
+    tags: ["v*.*.*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows-x64
+            binary: pumpkin-panel.exe
+            archive_ext: zip
+          - os: ubuntu-latest
+            name: linux-x64
+            binary: pumpkin-panel
+            archive_ext: tar.gz
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+
+      # The frontend is embedded into the binary at compile time, so it has
+      # to exist before `cargo build` runs.
+      - name: Build frontend
+        run: |
+          cd web
+          npm install
+          npm run build
+
+      - name: Build panel
+        run: cargo build --release
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $dest = "pumpkin-panel-${{ matrix.name }}"
+          New-Item -ItemType Directory -Path $dest | Out-Null
+          Copy-Item target/release/${{ matrix.binary }} $dest/
+          Copy-Item README.md $dest/
+          Copy-Item LICENSE $dest/
+          Compress-Archive -Path $dest/* -DestinationPath "$dest.zip"
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          dest="pumpkin-panel-${{ matrix.name }}"
+          mkdir "$dest"
+          cp target/release/${{ matrix.binary }} "$dest/"
+          cp README.md LICENSE "$dest/"
+          tar -czf "$dest.tar.gz" "$dest"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pumpkin-panel-${{ matrix.name }}
+          path: pumpkin-panel-${{ matrix.name }}.${{ matrix.archive_ext }}
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Release a version tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+
+      # Every push to main updates this same "latest" release in place, so
+      # there is always one link that points at the newest build without
+      # anyone having to cut a version.
+      - name: Update the rolling latest build
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: "Latest build (main)"
+          prerelease: true
+          make_latest: false
+          body: |
+            Automatically rebuilt from the latest commit on `main`:
+            ${{ github.sha }}
+
+            This is a development build, not a tagged release. For a stable
+            version, see the [Releases page](../../releases) for a `v*` tag.
+          files: dist/*
