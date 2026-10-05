@@ -152,7 +152,9 @@ without one.
 
 ## Licence
 
-MIT.
+[GPL-3.0-only](LICENSE), the same licence as the Pumpkin server.
 
 The panel talks to Pumpkin over stdin, stdout and the filesystem, so it is an independent program
-rather than a derivative of the GPL-licensed server.
+rather than a derivative of the server: the GPL here is a choice, not something the server
+requires. You can run, modify and redistribute the panel, and a modified version you distribute
+must be offered under the GPL with its source.

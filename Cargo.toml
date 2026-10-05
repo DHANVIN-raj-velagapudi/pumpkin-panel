@@ -3,7 +3,7 @@ name = "pumpkin-panel"
 version = "0.1.0"
 edition = "2021"
 description = "An installable, ad-free web control panel for Pumpkin Minecraft servers."
-license = "MIT"
+license = "GPL-3.0-only"
 
 [dependencies]
 axum = { version = "0.8", features = ["ws", "macros", "multipart"] }
