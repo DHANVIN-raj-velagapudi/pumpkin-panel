@@ -97,6 +97,9 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+          # A hyphen in the tag (v0.1.0-pre.1) is SemVer for "pre-release", so
+          # it is published as one and is never offered as the stable version.
+          prerelease: ${{ contains(github.ref_name, '-') }}
           body: |
             Licensed under AGPL-3.0-only (`LICENSE` is inside each archive).
             Corresponding source: https://github.com/${{ github.repository }}/tree/${{ github.sha }}
