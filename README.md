@@ -152,9 +152,9 @@ without one.
 
 ## Licence
 
-[GPL-3.0-only](LICENSE), the same licence as the Pumpkin server.
+[AGPL-3.0-only](LICENSE).
 
 The panel talks to Pumpkin over stdin, stdout and the filesystem, so it is an independent program
-rather than a derivative of the server: the GPL here is a choice, not something the server
-requires. You can run, modify and redistribute the panel, and a modified version you distribute
-must be offered under the GPL with its source.
+rather than a derivative of the server: the licence here is a choice, not something the server
+requires. You can run, modify and redistribute the panel. If you modify it and let others use it
+over a network, for example as a hosted service, you must offer them the modified source.
