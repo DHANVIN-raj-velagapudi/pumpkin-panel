@@ -111,6 +111,12 @@ export default function Players({ server }: { server: Server }) {
           changing them needs the server running.
         </div>
       )}
+      {running && data?.online_source === "log" && (
+        <div className="banner info">
+          The query port is off in pumpkin.toml, so this list is read from the server log.
+          Enable <code>[networking.query]</code> for exact results.
+        </div>
+      )}
       {running && data?.query_error && (
         <div className="banner info">
           Live player list unavailable: {data.query_error}

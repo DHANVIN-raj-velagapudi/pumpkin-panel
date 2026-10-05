@@ -50,6 +50,63 @@ pub async fn detail(
     Ok(Json(ServerView { server, runtime, access }))
 }
 
+/// Links a registered server to a copy of it that is already running.
+///
+/// The panel normally only knows about processes it launched itself, but a
+/// server is just as likely to be running already: started from a terminal,
+/// left up across a panel reinstall, or registered after the fact. Without
+/// this, such a server shows as stopped, and pressing Start tries to bind
+/// ports that are taken.
+///
+/// An adopted process has no stdin pipe, so the console is read-only (it
+/// follows the server's own log) until the server is restarted from the panel.
+///
+/// Returns whether a running process was found and linked.
+pub async fn adopt_if_running(state: &AppState, server: &ServerRecord) -> bool {
+    let spec = server.spec();
+    let (binary, dir) = (spec.binary_path.clone(), spec.working_dir.clone());
+
+    let Ok(Some((pid, started_at))) =
+        tokio::task::spawn_blocking(move || crate::metrics::find_running(&binary, &dir)).await
+    else {
+        return false;
+    };
+
+    let instance = state.sup.instance(&server.id).await;
+    if instance.adopt(&spec, pid, started_at).await.is_err() {
+        // Already tracked, which is the normal case after a reattach.
+        return false;
+    }
+
+    // Recorded like a panel launch, so the next panel restart reattaches too.
+    let _ = sqlx::query(
+        "INSERT OR REPLACE INTO running_servers
+            (server_id, pid, started_at, binary_path)
+         VALUES (?1, ?2, ?3, ?4)",
+    )
+    .bind(&server.id)
+    .bind(i64::from(pid))
+    .bind(started_at)
+    .bind(&server.binary_path)
+    .execute(&state.db)
+    .await;
+
+    tracing::info!(server = %server.name, pid, "linked to an already-running server");
+    true
+}
+
+/// Runs [`adopt_if_running`] for every registered server. Called once at
+/// startup, after the recorded servers are reattached and before autostart so
+/// that autostart cannot launch a second copy of something already up.
+pub async fn adopt_all_running(state: &AppState) {
+    let Ok(servers) = load_all_servers(state).await else {
+        return;
+    };
+    for server in servers {
+        adopt_if_running(state, &server).await;
+    }
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CreateServer {
     pub name: String,
@@ -127,7 +184,13 @@ pub async fn create(
     .await?;
 
     audit(&state, Some(&user), Some(&id), "server.create", Some(name)).await;
-    Ok(Json(json!({ "id": id })))
+
+    // If it is already running, link to it now rather than showing "stopped".
+    let linked = match load_server(&state, &id).await {
+        Ok(record) => adopt_if_running(&state, &record).await,
+        Err(_) => false,
+    };
+    Ok(Json(json!({ "id": id, "linked_to_running": linked })))
 }
 
 #[derive(Debug, Deserialize)]

@@ -130,6 +130,8 @@ export interface PlayersResponse {
   banned_ips: PlayerEntry[];
   whitelist: PlayerEntry[];
   known: PlayerEntry[];
+  /** "query" from the server's query port, "log" rebuilt from its log. */
+  online_source: "query" | "log" | null;
   query_error: string | null;
 }
 

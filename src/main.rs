@@ -5,6 +5,7 @@ mod api;
 mod audit;
 mod backup;
 mod crypto;
+mod logplayers;
 mod auth;
 mod db;
 mod error;
@@ -203,6 +204,7 @@ async fn main() -> anyhow::Result<()> {
     tokio::spawn(api::backups::run_scheduler(state.clone()));
 
     reattach_running_servers(&state).await;
+    api::servers::adopt_all_running(&state).await;
 
     api::servers::run_autostart(&state).await;
 

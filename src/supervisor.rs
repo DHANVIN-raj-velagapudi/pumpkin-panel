@@ -429,7 +429,17 @@ impl Instance {
         )
         .await;
 
-        self.follow_log(spec.working_dir.join("logs").join("latest.log"));
+        // The version and protocol numbers are read from the startup banner,
+        // and an adopted server printed that long before we arrived. Pull the
+        // line out of its log so the overview is not left blank.
+        let log = spec.working_dir.join("logs").join("latest.log");
+        if let Ok(text) = tokio::fs::read_to_string(&log).await {
+            if let Some(banner) = text.lines().take(50).find(|l| l.contains("Starting Pumpkin ")) {
+                self.push("stdout", banner.to_string()).await;
+            }
+        }
+
+        self.follow_log(log);
         self.watch_foreign_process(spec.id.clone(), pid, spec.binary_path.clone());
         self.sample_process(pid);
         Ok(())

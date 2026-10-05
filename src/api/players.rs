@@ -96,9 +96,30 @@ pub struct PlayersResponse {
     pub banned_ips: Vec<PlayerEntry>,
     pub whitelist: Vec<PlayerEntry>,
     pub known: Vec<PlayerEntry>,
-    /// Set when the live list could not be fetched, e.g. the server is stopped
-    /// or the query listener is disabled in pumpkin.toml.
+    /// Where `online` came from: `"query"` for the server's query port, or
+    /// `"log"` when it was reconstructed from the server's log because the
+    /// query port is off. `None` when the server is not running.
+    pub online_source: Option<&'static str>,
+    /// Set when no live list could be produced at all, e.g. the server is
+    /// stopped, or the query listener is off *and* there is no readable log.
     pub query_error: Option<String>,
+}
+
+/// Reads `max_players` from the Java section of `pumpkin.toml`, for when the
+/// query port that would normally report it is unavailable.
+async fn configured_max_players(working_dir: &std::path::Path) -> u32 {
+    let Ok(text) = tokio::fs::read_to_string(working_dir.join("pumpkin.toml")).await else {
+        return 0;
+    };
+    text.parse::<toml_edit::DocumentMut>()
+        .ok()
+        .and_then(|doc| {
+            doc.get("networking")?
+                .get("java")?
+                .get("max_players")?
+                .as_integer()
+        })
+        .map_or(0, |n| n.max(0) as u32)
 }
 
 pub async fn list(
@@ -119,22 +140,41 @@ pub async fn list(
         crate::supervisor::Status::Running
     );
 
-    let (status, query_error): (QueryStatus, Option<String>) = if running {
+    let (mut status, mut query_error, mut online_source): (
+        QueryStatus,
+        Option<String>,
+        Option<&'static str>,
+    ) = if running {
         match query_address(&dir).await {
             Some(addr) => match query::query(addr).await {
-                Ok(status) => (status, None),
-                Err(e) => (QueryStatus::default(), Some(e)),
+                Ok(status) => (status, None, Some("query")),
+                Err(e) => (QueryStatus::default(), Some(e), None),
             },
             None => (
                 QueryStatus::default(),
                 Some("query is disabled in pumpkin.toml ([networking.query])".into()),
+                None,
             ),
         }
     } else {
-        (QueryStatus::default(), Some("server is not running".into()))
+        (QueryStatus::default(), Some("server is not running".into()), None)
     };
 
+    // Without the query port the panel would report an empty server forever.
+    // The server's own log records every join and leave, so fall back to that.
+    if running && online_source.is_none() {
+        let log = dir.join("logs").join("latest.log");
+        if let Some(players) = crate::logplayers::online(&id, &log).await {
+            status.online = players.len() as u32;
+            status.max = configured_max_players(&dir).await;
+            status.players = players;
+            online_source = Some("log");
+            query_error = None;
+        }
+    }
+
     Ok(Json(PlayersResponse {
+        online_source,
         online_count: status.online,
         max_players: status.max,
         online: status.players,

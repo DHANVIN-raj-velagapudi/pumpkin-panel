@@ -72,3 +72,82 @@ pub fn process_matches(pid: u32, binary: &std::path::Path) -> bool {
             .is_some_and(|(a, b)| a.eq_ignore_ascii_case(b)),
     }
 }
+
+/// Reduces a path to a form that compares equal across the spellings Windows
+/// reports for the same file: case, slash direction and the `\\?\` prefix.
+fn normalise(path: &std::path::Path) -> String {
+    let text = path
+        .to_string_lossy()
+        .trim_start_matches(r"\\?\")
+        .replace('/', "\\")
+        .trim_end_matches('\\')
+        .to_owned();
+
+    // Windows paths ignore case; elsewhere `/srv/A` and `/srv/a` are different.
+    if cfg!(windows) {
+        text.to_lowercase()
+    } else {
+        text
+    }
+}
+
+#[cfg(test)]
+mod normalise_tests {
+    use super::normalise;
+    use std::path::Path;
+
+    #[test]
+    fn spellings_of_one_path_compare_equal() {
+        let verbatim = normalise(Path::new(r"\\?\E:\pumpkin mc\server\"));
+        let forward = normalise(Path::new("E:/pumpkin mc/server"));
+        assert_eq!(verbatim, forward);
+    }
+
+    #[test]
+    fn different_directories_stay_different() {
+        assert_ne!(
+            normalise(Path::new("E:/a/server")),
+            normalise(Path::new("E:/b/server"))
+        );
+    }
+}
+
+/// Finds a process already running `binary`, for servers the panel did not
+/// start itself (launched from a terminal, a shortcut, a service).
+///
+/// Deliberately stricter than [`process_matches`]: it requires the full
+/// executable path to match, and the working directory too whenever the OS
+/// will tell us. Two servers can share a binary, and adopting the wrong one
+/// would show another server's players and let a Stop button kill it.
+///
+/// Returns the pid and the process start time (seconds since the epoch).
+pub fn find_running(binary: &std::path::Path, working_dir: &std::path::Path) -> Option<(u32, i64)> {
+    use sysinfo::{ProcessRefreshKind, ProcessesToUpdate, System, UpdateKind};
+
+    let mut system = System::new();
+    system.refresh_processes_specifics(
+        ProcessesToUpdate::All,
+        true,
+        ProcessRefreshKind::nothing()
+            .with_exe(UpdateKind::OnlyIfNotSet)
+            .with_cwd(UpdateKind::OnlyIfNotSet),
+    );
+
+    let wanted_exe = normalise(binary);
+    let wanted_dir = normalise(working_dir);
+
+    system
+        .processes()
+        .values()
+        .filter(|process| {
+            process
+                .exe()
+                .is_some_and(|exe| normalise(exe) == wanted_exe)
+        })
+        .find(|process| {
+            process
+                .cwd()
+                .is_none_or(|cwd| normalise(cwd) == wanted_dir)
+        })
+        .map(|process| (process.pid().as_u32(), process.start_time() as i64))
+}
