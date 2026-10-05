@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Serves the built frontend, which is embedded directly into the binary so the
 //! panel ships as a single file with no assets to deploy alongside it.
 

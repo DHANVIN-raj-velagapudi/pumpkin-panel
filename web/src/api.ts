@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 export type Role = "admin" | "user";
 
 export type Status = "stopped" | "starting" | "running" | "stopping" | "crashed";

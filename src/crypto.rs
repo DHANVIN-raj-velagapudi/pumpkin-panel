@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Encryption for the few secrets the panel must be able to read back.
 //!
 //! Passwords and recovery codes are hashed, because the panel only ever needs

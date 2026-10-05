@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Security controls: request throttling, login lockout, and upload inspection.
 //!
 //! The guiding rule here is that a control has to stop a real attack without

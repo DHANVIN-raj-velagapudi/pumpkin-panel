@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 use crate::api::{load_all_servers, load_server, ServerRecord};
 use crate::auth::{audit, server_access, CurrentUser, ServerAccess};
 use crate::db::now;

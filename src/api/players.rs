@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Player administration.
 //!
 //! Live players come from the server's query port; operators, bans and the

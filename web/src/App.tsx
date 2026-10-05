@@ -1,5 +1,10 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 import { useCallback, useEffect, useState } from "react";
 import { api, type Server, type User } from "./api";
+
+/** Where the corresponding source lives, as the AGPL expects users to be told. */
+const SOURCE_URL = "https://github.com/DHANVIN-raj-velagapudi/pumpkin-panel";
 import Login from "./components/Login";
 import Overview from "./components/Overview";
 import Console from "./components/Console";
@@ -213,6 +218,15 @@ ${verb} the server anyway?`)) return;
           <button className="btn ghost sm" onClick={() => void logout()}>
             Sign out
           </button>
+        </div>
+
+        {/* The AGPL gives everyone who uses this panel over a network the right
+            to its source, so every signed-in user is shown where to find it. */}
+        <div className="license-line">
+          <a href={SOURCE_URL} target="_blank" rel="noreferrer noopener">
+            Source code
+          </a>{" "}
+          · AGPL-3.0
         </div>
       </aside>
 

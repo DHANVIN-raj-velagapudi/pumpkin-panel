@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 use crate::db::now;
 use crate::error::{AppError, AppResult};
 use serde::{Deserialize, Serialize};

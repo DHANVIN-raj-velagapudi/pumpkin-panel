@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Schema-aware editing of a server's TOML configuration.
 //!
 //! A generic panel hands you a text box and wishes you luck. Pumpkin's

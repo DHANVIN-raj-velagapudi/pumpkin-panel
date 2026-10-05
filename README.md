@@ -158,3 +158,7 @@ The panel talks to Pumpkin over stdin, stdout and the filesystem, so it is an in
 rather than a derivative of the server: the licence here is a choice, not something the server
 requires. You can run, modify and redistribute the panel. If you modify it and let others use it
 over a network, for example as a hosted service, you must offer them the modified source.
+
+The web interface links to the source from the sidebar, and the panel logs the licence and source
+location on startup. If you run a modified version, point `SOURCE_URL` in `web/src/App.tsx` and
+`repository` in `Cargo.toml` at where your modified source is published.

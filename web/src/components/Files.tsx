@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 import { useCallback, useEffect, useRef, useState, type DragEvent } from "react";
 import { api, ApiError, type FileEntry, type Server } from "../api";
 

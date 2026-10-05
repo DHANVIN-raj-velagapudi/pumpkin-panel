@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 mod affinity;
 mod api;
 mod audit;
@@ -213,6 +215,13 @@ async fn main() -> anyhow::Result<()> {
             middleware::rate_limit,
         ))
         .with_state(state.clone());
+
+    // The AGPL asks that people using a network service can find its source.
+    // The web UI links to it too; this puts it in the operator's log as well.
+    tracing::info!(
+        "pumpkin-panel is licensed under AGPL-3.0-only; source: {}",
+        env!("CARGO_PKG_REPOSITORY")
+    );
 
     // ConnectInfo is required so the rate limiter can see who is calling.
     let service = app.into_make_service_with_connect_info::<SocketAddr>();

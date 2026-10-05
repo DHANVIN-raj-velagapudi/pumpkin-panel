@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! The Activity page: reading the chained audit log and checking its integrity.
 
 use crate::audit;

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Pumpkin-specific knowledge.
 //!
 //! This is what separates the panel from a generic process manager: it knows

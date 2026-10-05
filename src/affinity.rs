@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Restricting a server to a number of CPU cores.
 //!
 //! Unlike memory, core count can actually be *enforced* without a container:

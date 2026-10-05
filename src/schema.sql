@@ -1,3 +1,5 @@
+-- SPDX-License-Identifier: AGPL-3.0-only
+-- Copyright (C) 2026 Dhanvin Raj Velagapudi
 CREATE TABLE IF NOT EXISTS users (
     id            TEXT PRIMARY KEY,
     username      TEXT NOT NULL UNIQUE COLLATE NOCASE,

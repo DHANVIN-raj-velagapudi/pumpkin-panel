@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { consoleSocket, type ConsoleLine, type Server } from "../api";
 import { parseAnsi } from "../ansi";

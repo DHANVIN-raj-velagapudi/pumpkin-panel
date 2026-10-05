@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Copyright (C) 2026 Dhanvin Raj Velagapudi */
 /* ============================================================
    Design tokens
    ============================================================ */
@@ -186,6 +188,18 @@ h3 {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.license-line {
+  padding: 0 12px 10px;
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.license-line a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .avatar {

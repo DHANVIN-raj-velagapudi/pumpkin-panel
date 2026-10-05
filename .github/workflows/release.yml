@@ -97,6 +97,9 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+          body: |
+            Licensed under AGPL-3.0-only (`LICENSE` is inside each archive).
+            Corresponding source: https://github.com/${{ github.repository }}/tree/${{ github.sha }}
 
       # Every push to main updates this same "latest" release in place, so
       # there is always one link that points at the newest build without
@@ -115,4 +118,7 @@ jobs:
 
             This is a development build, not a tagged release. For a stable
             version, see the [Releases page](../../releases) for a `v*` tag.
+
+            Licensed under AGPL-3.0-only (`LICENSE` is inside each archive).
+            Corresponding source: https://github.com/${{ github.repository }}/tree/${{ github.sha }}
           files: dist/*

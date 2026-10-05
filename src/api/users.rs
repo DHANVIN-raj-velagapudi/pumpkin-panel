@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 use crate::auth::{audit, hash_password, CurrentUser, Role};
 use crate::db::now;
 use crate::error::{AppError, AppResult};

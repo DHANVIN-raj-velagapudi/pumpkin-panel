@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Minecraft Query (GameSpy4) client.
 //!
 //! Pumpkin enables this on the Java port by default, and it is the cleanest way

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Resource usage for a running server.
 //!
 //! Pumpkin is a native binary, not a JVM, so there is no `-Xmx` to set: memory

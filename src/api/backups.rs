@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Backup endpoints: snapshot, list, restore, prune.
 
 use crate::api::load_server;

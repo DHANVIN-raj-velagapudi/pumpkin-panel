@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Process resource sampling, shared by the live stats endpoint and the
 //! background history recorder that feeds the charts.
 

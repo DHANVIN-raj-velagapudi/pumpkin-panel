@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Two-factor authentication.
 //!
 //! TOTP is the second factor: the panel stores a shared secret, the user's

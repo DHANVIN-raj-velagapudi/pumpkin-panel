@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Snapshots, retention and restore.
 //!
 //! A backup is a zip of everything under the server folder except the server

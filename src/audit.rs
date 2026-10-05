@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 Dhanvin Raj Velagapudi
 //! Tamper-evident activity log.
 //!
 //! Every event carries the hash of the one before it, so the log forms a chain.
